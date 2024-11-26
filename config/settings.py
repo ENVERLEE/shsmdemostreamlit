@@ -6,16 +6,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # LLM Settings
 LLM_CONFIG = {
-    "model_name": "gpt-3.5-turbo",
+    "model_name": "qwen/qwen-2-7b-instruct:free",
     "temperature": 0.3,
-    "max_tokens": 1000,
+    "max_tokens": 4096,
+    "api_key": "place-holder",
 }
 
-# Embedding Settings
 EMBEDDING_CONFIG = {
-    "model_name": "text-embedding-ada-002",
-    "chunk_size": 1000,
+    "model_name": "voyage-multilingual-02",
+    "chunk_size": 8192,
     "chunk_overlap": 200,
+    "api_key": "place-holder"
 }
 
 # Research Settings

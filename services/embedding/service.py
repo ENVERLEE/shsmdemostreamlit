@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from langchain_community.embeddings import OpenAIEmbeddings
+from voyageai import get_embedding, get_embeddings  # VoyageAI SDK 임포트
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from core.exceptions import EmbeddingServiceException
 from core.models import EmbeddingData
@@ -8,9 +8,7 @@ from config.settings import EMBEDDING_CONFIG
 class EmbeddingService:
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or EMBEDDING_CONFIG
-        self.embeddings = OpenAIEmbeddings(
-            model=self.config["model_name"]
-        )
+        # VoyageAI API 키는 환경 변수나 설정에서 자동으로 로드됨
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.config["chunk_size"],
             chunk_overlap=self.config["chunk_overlap"]
@@ -21,8 +19,11 @@ class EmbeddingService:
             # Split text into chunks
             chunks = self.text_splitter.split_text(text)
             
-            # Generate embeddings for each chunk
-            embeddings = await self.embeddings.aembed_documents(chunks)
+            # VoyageAI를 사용하여 임베딩 생성
+            embeddings = await get_embeddings(
+                chunks,
+                model=self.config["model_name"]
+            )
             
             # Create EmbeddingData objects
             embedding_data = []
@@ -33,8 +34,8 @@ class EmbeddingService:
                     metadata=metadata or {}
                 )
                 embedding_data.append(data)
-            
             return embedding_data
+            
         except Exception as e:
             raise EmbeddingServiceException(f"Error creating embeddings: {str(e)}")
 
@@ -45,8 +46,11 @@ class EmbeddingService:
         top_k: int = 5
     ) -> List[Dict[str, Any]]:
         try:
-            # Generate query embedding
-            query_embedding = await self.embeddings.aembed_query(query)
+            # VoyageAI를 사용하여 쿼리 임베딩 생성
+            query_embedding = await get_embedding(
+                query,
+                model=self.config["model_name"]
+            )
             
             # Calculate similarity scores
             results = []
@@ -57,10 +61,11 @@ class EmbeddingService:
                     "similarity": similarity,
                     "metadata": data.metadata
                 })
-            
+                
             # Sort by similarity and return top k
             results.sort(key=lambda x: x["similarity"], reverse=True)
             return results[:top_k]
+            
         except Exception as e:
             raise EmbeddingServiceException(f"Error performing similarity search: {str(e)}")
 

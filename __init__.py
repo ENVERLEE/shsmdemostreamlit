@@ -8,5 +8,5 @@ from .services.research.service import ResearchService
 from .services.quality.service import QualityControlService
 from .services.llm.service import LLMService
 from .services.embedding.service import EmbeddingService
-
+from .main import mainfuc, ResearchAssistant
 __version__ = '0.1.0'

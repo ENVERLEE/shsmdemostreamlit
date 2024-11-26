@@ -13,11 +13,33 @@ class QualityLevel(str, Enum):
     MEDIUM = "medium"
     HIGH = "high"
 
+class ResearchDirection(str, Enum):
+    EXPLORATORY = "exploratory"  # 탐색적 연구
+    DESCRIPTIVE = "descriptive"  # 기술적 연구
+    EXPLANATORY = "explanatory"  # 설명적 연구
+    EXPERIMENTAL = "experimental"  # 실험적 연구
+    THEORETICAL = "theoretical"  # 이론적 연구
+
+class EvaluationCriteria(BaseModel):
+    methodology_weight: float = 0.3  # 연구방법론 가중치
+    innovation_weight: float = 0.2   # 혁신성 가중치
+    validity_weight: float = 0.3     # 타당성 가중치
+    reliability_weight: float = 0.2   # 신뢰성 가중치
+    
+    min_quality_score: float = 0.7    # 최소 품질 점수
+    required_validity_score: float = 0.8  # 필요 타당성 점수
+    
+    custom_criteria: Optional[Dict[str, float]] = None  # 추가 평가 기준
+
 class ResearchRequest(BaseModel):
-    query: str
-    context: Optional[str] = None
-    max_iterations: Optional[int] = None
-    quality_threshold: Optional[float] = None
+    topic: str  # 연구 주제
+    description: str  # 연구 설명
+    direction: ResearchDirection  # 연구 방향성
+    evaluation_criteria: EvaluationCriteria  # 평가 기준
+    
+    context: Optional[str] = None  # 추가 컨텍스트
+    max_iterations: Optional[int] = None  # 최대 반복 횟수
+    custom_config: Optional[Dict[str, Any]] = None  # 추가 설정
 
 class ResearchResult(BaseModel):
     query: str
